@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://camel.apache.org/schema/spring
+		http://camel.apache.org/schema/spring/camel-spring.xsd
+		http://www.springframework.org/schema/task
+		http://www.springframework.org/schema/task/spring-task.xsd
+        http://www.springframework.org/schema/ldap
+        http://www.springframework.org/schema/ldap">
+    <context:annotation-config/>
+    <task:annotation-driven/>
+
+    <bean id="placeholderConfig"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:config.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="sc" class="com.motivtelecom.schedule.SchedulerMediator"/>
+
+    <!--STATDB-->
+    <bean id="main_dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+        <property name="url" value="jdbc:oracle:thin:@192.168.129.53:1521:HOSTPRP" />
+        <property name="validationQuery" value="select 1 from dual" />
+        <property name="username" value="${main_data_source.user}" />
+        <property name="password" value="${main_data_source.pass}"/>
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="180" />
+    </bean>
+
+    <!--STATDB-->
+    <bean id="dataSource_user1_stat" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+        <property name="url" value="jdbc:oracle:thin:@192.168.129.53:1521:HOSTPRP" />
+        <property name="validationQuery" value="select 1 from dual" />
+        <property name="username" value="${user1_data_source.user}" />
+        <property name="password" value="${user1_data_source.pass}"/>
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="180" />
+    </bean>
+
+    <!--HAWKHP-->
+    <bean id="dataSource_user1_hawkhp" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+        <property name="url" value="jdbc:oracle:thin:@192.168.26.36:1521:hostprp" />
+        <property name="username" value="${user1_data_source.user}" />
+        <property name="password" value="${user1_data_source.pass}" />
+        <property name="validationQuery" value="select 1 from dual" />
+        <property name="timeBetweenEvictionRunsMillis" value="100" />
+        <property name="initialSize" value="1" />
+        <property name="maxActive" value="2" />
+        <property name="maxIdle" value="1" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="10" />
+    </bean>
+
+    <!--STATDB-->
+    <bean id="dataSource_user2_stat" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+        <property name="url" value="jdbc:oracle:thin:@192.168.129.53:1521:HOSTPRP" />
+        <property name="validationQuery" value="select 1 from dual" />
+        <property name="username" value="${user2_data_source.user}" />
+        <property name="password" value="${user2_data_source.pass}"/>
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="180" />
+    </bean>
+
+    <!--HAWKHP-->
+    <bean id="dataSource_user2_hawkhp" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+        <property name="url" value="jdbc:oracle:thin:@192.168.26.36:1521:hostprp" />
+        <property name="username" value="${user2_data_source.user}" />
+        <property name="password" value="${user2_data_source.pass}" />
+        <property name="validationQuery" value="select 1 from dual" />
+        <property name="timeBetweenEvictionRunsMillis" value="100" />
+        <property name="initialSize" value="1" />
+        <property name="maxActive" value="2" />
+        <property name="maxIdle" value="1" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="10" />
+    </bean>
+
+    <bean id="main" class="org.springframework.jdbc.core.JdbcTemplate" depends-on="main_dataSource">
+        <constructor-arg type="javax.sql.DataSource">
+            <ref bean="main_dataSource" />
+        </constructor-arg>
+    </bean>
+
+    <bean id="asr_robot@statdb" class="org.springframework.jdbc.core.JdbcTemplate" depends-on="dataSource_user1_stat">
+        <constructor-arg type="javax.sql.DataSource">
+            <ref bean="dataSource_user1_stat" />
+        </constructor-arg>
+    </bean>
+
+    <bean id="asr_robot@hawkhp" class="org.springframework.jdbc.core.JdbcTemplate" depends-on="dataSource_user1_hawkhp">
+        <constructor-arg type="javax.sql.DataSource">
+            <ref bean="dataSource_user1_hawkhp" />
+        </constructor-arg>
+    </bean>
+
+    <bean id="asr_reproter@statdb" class="org.springframework.jdbc.core.JdbcTemplate" depends-on="dataSource_user2_stat">
+        <constructor-arg type="javax.sql.DataSource">
+            <ref bean="dataSource_user2_stat" />
+        </constructor-arg>
+    </bean>
+
+    <bean id="asr_reproter@hawkhp" class="org.springframework.jdbc.core.JdbcTemplate" depends-on="dataSource_user2_hawkhp">
+        <constructor-arg type="javax.sql.DataSource">
+            <ref bean="dataSource_user2_hawkhp" />
+        </constructor-arg>
+    </bean>
+
+
+
+</beans>
