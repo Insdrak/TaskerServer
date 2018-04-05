@@ -1,14 +1,14 @@
 package com.motivtelecom.conf;
 
+import lombok.extern.log4j.Log4j;
 import org.apache.log4j.Logger;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+@Log4j
 class PropertiesMediator {
-
-    private final static Logger logger = Logger.getLogger(PropertiesMediator.class);
 
     private static Properties getSettings (){
         //System.out.printf(com.motivtelecom.conf.PropertiesMediator.class.getProtectionDomain().getCodeSource().getLocation().getPath());
@@ -18,7 +18,7 @@ class PropertiesMediator {
             return properties;
         }
         catch (IOException e) {
-            logger.error("Error loading config file",e);
+            log.error("Error loading config file",e);
             return null;
         }
     }

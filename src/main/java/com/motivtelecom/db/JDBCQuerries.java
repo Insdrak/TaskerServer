@@ -1,5 +1,6 @@
 package com.motivtelecom.db;
 
+import lombok.extern.log4j.Log4j;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,10 +16,9 @@ import java.util.Map;
  * Created by Aoi on 27.01.2017.
  */
 @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
+@Log4j
 public class JDBCQuerries {
     private static JdbcTemplate template;
-
-    private final static Logger logger = Logger.getLogger(JDBCQuerries.class);
 
     public JDBCQuerries(ApplicationContext context) {
         template = (JdbcTemplate) context.getBean("main");
@@ -68,7 +68,7 @@ public class JDBCQuerries {
         return out;
     }
 
-    public void updateTaskNextStartTime(AsrAutoTask asrAutoTask) {
+    public static void updateTaskNextStartTime(AsrAutoTask asrAutoTask) {
         String sql =
                 " UPDATE "+
                 " STATBOY.ASR_AUTO_TASKS "+
@@ -101,7 +101,7 @@ public class JDBCQuerries {
         template.execute(sql);
     }
 
-    public void whrite_logtab (String message){
+    public static void whriteLogtab (String message){
         String sql =
                 " BEGIN "+
                         " sysbee.sk_logtab_pkg.writelogtab(incid => 'ASR_AUTO', insubcid =>'EXECUTE_TASK_SERVER' , indat => sysdate, indescr => q'<"+message+">' ); "+
@@ -185,11 +185,11 @@ public class JDBCQuerries {
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql_text)){
                     preparedStatement.execute();
                 } catch (SQLException e1) {
-                    logger.error(e1);
+                    log.error(e1);
                     e1.printStackTrace();
                 }
             } catch (SQLException e) {
-                logger.error(e);
+                log.error(e);
                 e.printStackTrace();
             }
             return "OK";
